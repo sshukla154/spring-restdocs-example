@@ -1,7 +1,5 @@
 package frontier.learning.web.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -9,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,13 +17,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import frontier.learning.domain.Beer;
 import frontier.learning.repositories.BeerRepository;
 import frontier.learning.web.model.BeerDTO;
 import frontier.learning.web.model.BeerStyleEnum;
 
 @WebMvcTest(BeerController.class)
-@ComponentScan(basePackages = "frontier.learning.web.mapper")
+@ComponentScan(basePackages = "frontier.learning")
 public class BeerControllerTest {
 
 	@MockBean
@@ -41,7 +38,8 @@ public class BeerControllerTest {
 
 	@Test
 	public void getBeerById() throws Exception {
-		given(beerRespository.findAllById(any())).willReturn(Beer.builder().build());
+//		given(beerRespository.getBeerById(any(UUID.class))).willReturn(validBeer);
+//		given(beerRespository.())(any())).willReturn(Beer.builder().build());
 
 		mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());

@@ -27,7 +27,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Beer implements Iterable<Beer> {
+public class Beer {
 
 	@Id
 	@GeneratedValue(generator = "UUID")
@@ -54,10 +54,5 @@ public class Beer implements Iterable<Beer> {
 
 	private Integer minOnHand;
 	private Integer quantityToBrew;
-	@Override
-	public Iterator<Beer> iterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
