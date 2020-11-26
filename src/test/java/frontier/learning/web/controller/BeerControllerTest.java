@@ -1,26 +1,42 @@
 package frontier.learning.web.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+/* import should be from MockMvcRequestBuilders instead of MockMvcRequestBuilders*/
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import frontier.learning.domain.Beer;
 import frontier.learning.repositories.BeerRepository;
 import frontier.learning.web.model.BeerDTO;
 import frontier.learning.web.model.BeerStyleEnum;
 
+@ExtendWith(RestDocumentationExtension.class)
+@AutoConfigureRestDocs
 @WebMvcTest(BeerController.class)
 @ComponentScan(basePackages = "frontier.learning")
 public class BeerControllerTest {
@@ -34,15 +50,13 @@ public class BeerControllerTest {
 	@Autowired
 	ObjectMapper objectmapper;
 
-//	BeerDTO validBeer;
-
 	@Test
 	public void getBeerById() throws Exception {
-//		given(beerRespository.getBeerById(any(UUID.class))).willReturn(validBeer);
-//		given(beerRespository.())(any())).willReturn(Beer.builder().build());
+		given(beerRespository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
 
-		mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+		mockMvc.perform(get("/api/v1/beer/{beerId}" + UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("/v1/beer",
+						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get"))));
 	}
 
 	@Test
