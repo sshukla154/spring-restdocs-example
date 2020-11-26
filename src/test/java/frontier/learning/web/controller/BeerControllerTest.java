@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -75,6 +77,29 @@ public class BeerControllerTest {
 				.andDo(document("/v1/beer",
 						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get")),
 						requestParameters(parameterWithName("iscold").description("Is Beer Cold Query param"))));
+	}
+	
+	/*Example : "Documenting Response Parameter"*/
+	@Test
+	public void getBeerById_2() throws Exception {
+		given(beerRespository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
+
+		mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
+				.param("iscold", "yes")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("/v1/beer",
+						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get")),
+						requestParameters(parameterWithName("iscold").description("Is Beer Cold Query param")),
+						responseFields(fieldWithPath("id").description("Id of beer"),fieldWithPath("id").description("Id of beer"),
+								fieldWithPath("version").description("Version Number"),
+								fieldWithPath("createDate").description("Date Created"),
+								fieldWithPath("lastModifiedDate").description("Date Updated"),
+								fieldWithPath("beerName").description("Beer Name"),
+								fieldWithPath("beerStyleName").description("Beer Style"),
+								fieldWithPath("upc").description("UPC of beer"),
+								fieldWithPath("quantityOnHand").description("Quantity On Hand"),
+								fieldWithPath("price").description("Price of beer"))));
 	}
 
 	@Test
