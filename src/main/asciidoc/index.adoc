@@ -1,4 +1,4 @@
-= SFG Brewery Order Service Docs
+= Brewery Order Service Docs
 frontier154;
 :doctype: book
 :icons: font
