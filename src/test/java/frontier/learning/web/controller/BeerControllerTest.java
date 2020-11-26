@@ -16,6 +16,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -106,8 +107,20 @@ public class BeerControllerTest {
 	public void createBeer() throws Exception {
 		BeerDTO beerDTO = getValidBeerDTO();
 		String beerDtoToJson = objectmapper.writeValueAsString(beerDTO);
-		mockMvc.perform(post("/api/v1/beer/").contentType(MediaType.APPLICATION_JSON).content(beerDtoToJson))
-				.andExpect(status().isCreated());
+		mockMvc.perform(post("/api/v1/beer/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(beerDtoToJson))
+				.andExpect(status().isCreated())
+				.andDo(document("/v1/beer",
+						requestFields(fieldWithPath("id").ignored(),
+								fieldWithPath("version").ignored(),
+								fieldWithPath("createDate").ignored(),
+								fieldWithPath("lastModifiedDate").ignored(),
+								fieldWithPath("beerName").description("Name of the beer"),
+								fieldWithPath("beerStyleName").description("Beer Style"),
+								fieldWithPath("upc").description("UPC of beer"),
+								fieldWithPath("quantityOnHand").ignored(),
+								fieldWithPath("price").description("Price of beer"))));
 
 	}
 

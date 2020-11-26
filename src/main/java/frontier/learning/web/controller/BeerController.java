@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import frontier.learning.service.BeerService;
 import frontier.learning.web.model.BeerDTO;
+import frontier.learning.web.model.BeerStyleEnum;
 
 /*
  * @Validated - Its a Spring Framework annotation which performs validation on METHOD INPUT PARAMTERS 
@@ -46,6 +47,7 @@ public class BeerController {
 
 	@PostMapping
 	public ResponseEntity<BeerDTO> createBeer(@NotNull @Validated @RequestBody BeerDTO beerDTO) {
+		beerDTO = getValidBeerDTO();
 		BeerDTO savedBeer = beerService.createBeer(beerDTO);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		// Add hostname to URL
@@ -66,8 +68,9 @@ public class BeerController {
 		beerService.deleteById(beerId);
 	}
 
-	/*NOTE : (This validateExceptionhandler() has been moved to Advice class)
-	 * This ExceptionHandler(), will be called from create/update beer API. When any
+	/*
+	 * NOTE : (This validateExceptionhandler() has been moved to Advice class) This
+	 * ExceptionHandler(), will be called from create/update beer API. When any
 	 * exception is occurred in these API that will be cached by @Valid annotation
 	 * which will internally call this API
 	 */
@@ -84,5 +87,11 @@ public class BeerController {
 //		e.getConstraintViolations().forEach(consumerAction);
 //		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 //	}
+
+	/* To verify create and update scenario */
+	BeerDTO getValidBeerDTO() {
+		return BeerDTO.builder().id(UUID.randomUUID()).beerName("Bud").beerStyleName(BeerStyleEnum.PALE_ALE)
+				.upc(123321L).build();
+	}
 
 }
