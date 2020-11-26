@@ -2,9 +2,6 @@ package frontier.learning.web.controller;
 
 import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
-
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import frontier.learning.service.BeerService;
+import frontier.learning.repositories.BeerRepository;
+import frontier.learning.web.mapper.BeerMapper;
 import frontier.learning.web.model.BeerDTO;
 import frontier.learning.web.model.BeerStyleEnum;
+import lombok.RequiredArgsConstructor;
 
 /*
  * @Validated - Its a Spring Framework annotation which performs validation on METHOD INPUT PARAMTERS 
@@ -29,43 +28,36 @@ import frontier.learning.web.model.BeerStyleEnum;
  * Eg: @NOtNull in createBeer()
  */
 
-@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/beer")
 public class BeerController {
 
-	BeerService beerService;
-
-	public BeerController(BeerService beerService) {
-		this.beerService = beerService;
-	}
+    private final BeerRepository beerRepository;
+    private final BeerMapper beerMapper;
 
 	@GetMapping("/{beerId}")
-	public ResponseEntity<BeerDTO> getBeerById(@NotNull @PathVariable UUID beerId) {
-		return new ResponseEntity<>(beerService.getBeerById(beerId), HttpStatus.OK);
+	public ResponseEntity<BeerDTO> getBeerById(@PathVariable UUID beerId) {
+		return new ResponseEntity<>(beerMapper.beerToBeerDTO(beerRepository.findById(beerId).get()), HttpStatus.OK);
 	}
 
 	@PostMapping
-	public ResponseEntity<BeerDTO> createBeer(@NotNull @Validated @RequestBody BeerDTO beerDTO) {
-		beerDTO = getValidBeerDTO();
-		BeerDTO savedBeer = beerService.createBeer(beerDTO);
-		HttpHeaders httpHeaders = new HttpHeaders();
-		// Add hostname to URL
-		httpHeaders.add("Location", "/api/v1/beer" + savedBeer.getId().toString());
-		return new ResponseEntity<BeerDTO>(httpHeaders, HttpStatus.CREATED);
+	public ResponseEntity<BeerDTO> createBeer(@Validated @RequestBody BeerDTO beerDTO) {
+		 beerRepository.save(beerMapper.beerDTOToBeer(beerDTO));
+		 return new ResponseEntity(HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{beerId}")
 	public ResponseEntity<BeerDTO> updateBeerById(@PathVariable UUID beerId, @Validated @RequestBody BeerDTO beerDTO) {
-		beerService.updateBeerById(beerId, beerDTO);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
+		beerRepository.findById(beerId).ifPresent(beer -> {
+            beer.setBeerName(beerDTO.getBeerName());
+            beer.setBeerStyle(beerDTO.getBeerStyleName().toString());
+            beer.setPrice(beerDTO.getPrice());
+            beer.setUpc(beerDTO.getUpc());
 
-	@DeleteMapping("/{beerId}")
-//	@ResponseStatus(HttpStatus.BAD_GATEWAY)
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteBeer(@PathVariable UUID beerId) {
-		beerService.deleteById(beerId);
+            beerRepository.save(beer);
+        });
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	/*
@@ -87,11 +79,5 @@ public class BeerController {
 //		e.getConstraintViolations().forEach(consumerAction);
 //		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 //	}
-
-	/* To verify create and update scenario */
-	BeerDTO getValidBeerDTO() {
-		return BeerDTO.builder().id(UUID.randomUUID()).beerName("Bud").beerStyleName(BeerStyleEnum.PALE_ALE)
-				.upc(123321L).build();
-	}
 
 }

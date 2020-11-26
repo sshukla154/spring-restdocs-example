@@ -95,7 +95,7 @@ public class BeerControllerTest {
 
 		mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString()).param("iscold", "yes")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andDo(document("/v1/beer",
+				.andDo(document("/v1/beer-get",
 						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get")),
 						requestParameters(parameterWithName("iscold").description("Is Beer Cold Query param")),
 						responseFields(fieldWithPath("id").description("Id of beer"), //
@@ -121,24 +121,25 @@ public class BeerControllerTest {
 
 	/* Example : "Documenting Constraints" */
 //	@Test
-//	public void createBeer() throws Exception {
+//	public void createBeer_1() throws Exception {
 //		BeerDTO beerDTO = getValidBeerDTO();
 //		String beerDtoToJson = objectmapper.writeValueAsString(beerDTO);
 //		ConstrainedFields fields = new ConstrainedFields(BeerDTO.class);
 //		mockMvc.perform(post("/api/v1/beer/").contentType(MediaType.APPLICATION_JSON).content(beerDtoToJson))
 //				.andExpect(status().isCreated())
-//				.andDo(document("/v1/beer",//
+//				.andDo(document("/v1/beer-new",//
 //						requestFields(fieldWithPath("id").ignored(),//
 //								fields.withPath("version").ignored(),//
 //								fields.withPath("createDate").ignored(),//
 //								fields.withPath("lastModifiedDate").ignored(),//
 //								fields.withPath("beerName").description("Name of the beer"),//
 //								fields.withPath("beerStyleName").description("Beer Style"),//
-//								fields.withPath("upc").description("UPC of beer"),//
-//								fields.withPath("quantityOnHand").description(""),//
+//								fields.withPath("upc").description("UPC of beer").attributes(),//
+//								fields.withPath("quantityOnHand").ignored(),//
 //								fields.withPath("price").description("Price of beer"))));
 //
 //	}
+	
 	@Test
 	public void updateBeerById() throws Exception {
 		BeerDTO beerDTO = getValidBeerDTO();
