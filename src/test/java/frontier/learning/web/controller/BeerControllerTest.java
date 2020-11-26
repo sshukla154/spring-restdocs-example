@@ -52,7 +52,7 @@ import frontier.learning.web.model.BeerStyleEnum;
  */
 
 @ExtendWith(RestDocumentationExtension.class)
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(uriScheme = "https", uriHost="dev.springframework.guru", uriPort=80)
 @WebMvcTest(BeerController.class)
 @ComponentScan(basePackages = "frontier.learning")
 public class BeerControllerTest {
