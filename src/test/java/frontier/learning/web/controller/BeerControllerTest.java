@@ -55,18 +55,19 @@ import frontier.learning.web.model.BeerStyleEnum;
 /*
  * 
  * 
- * 
- * Ignored Test Case to pass in CircleCI. failing due to 
- * 
- * 
+ * NOTE 1: 
+ * Ignored Test Case to pass in CircleCI.
  * IllegalState Failed to create directory
+ * 
+ * NOTE 2: Remove forward slash to fix below error
+ * 
+ * BeerControllerTest.getBeerById:91 » IllegalState Failed to create directory '/...
+ * BeerControllerTest.getBeerById_1:102 » IllegalState Failed to create directory...
+ * BeerControllerTest.getBeerById_2:114 » IllegalState Failed to create directory...("v1/beer",
  * 
  * 
  * */
 
-
-
-@Ignore
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs(uriScheme = "https", uriHost="dev.springframework.guru", uriPort=80)
 @WebMvcTest(BeerController.class)
@@ -88,7 +89,7 @@ public class BeerControllerTest {
 		given(beerRespository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
 
 		mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andDo(document("/v1/beer",
+				.andExpect(status().isOk()).andDo(document("v1/beer",
 						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get"))));
 	}
 
@@ -99,7 +100,7 @@ public class BeerControllerTest {
 
 		mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString()).param("iscold", "yes")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andDo(document("/v1/beer",
+				.andDo(document("v1/beer",
 						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get")),
 						requestParameters(parameterWithName("iscold").description("Is Beer Cold Query param"))));
 	}
@@ -111,7 +112,7 @@ public class BeerControllerTest {
 
 		mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString()).param("iscold", "yes")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andDo(document("/v1/beer-get",
+				.andDo(document("v1/beer-get",
 						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get")),
 						requestParameters(parameterWithName("iscold").description("Is Beer Cold Query param")),
 						responseFields(fieldWithPath("id").description("Id of beer"), //
