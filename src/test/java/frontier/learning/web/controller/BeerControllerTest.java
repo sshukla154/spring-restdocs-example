@@ -13,6 +13,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -50,13 +51,30 @@ public class BeerControllerTest {
 	@Autowired
 	ObjectMapper objectmapper;
 
+	/*Example : "Documenting Path Parameter"*/
 	@Test
 	public void getBeerById() throws Exception {
 		given(beerRespository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
 
-		mockMvc.perform(get("/api/v1/beer/{beerId}" + UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andDo(document("/v1/beer",
+		mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("/v1/beer",
 						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get"))));
+	}
+	
+	/*Example : "Documenting Query Parameter"*/
+	@Test
+	public void getBeerById_1() throws Exception {
+		given(beerRespository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
+
+		mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
+				.param("iscold", "yes")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("/v1/beer",
+						pathParameters(parameterWithName("beerId").description("UUID if desired beer to get")),
+						requestParameters(parameterWithName("iscold").description("Is Beer Cold Query param"))));
 	}
 
 	@Test
